@@ -8,11 +8,16 @@ kubectl create namespace $NAMESPACE --dry-run=client -o yaml | kubectl apply -f 
 
 echo "Creating secrets in namespace: $NAMESPACE"
 
-# 1. PostgreSQL секрет
 kubectl create secret generic postgresql-secret \
   --namespace=$NAMESPACE \
   --from-literal=username=postgres \
   --from-literal=password="${POSTGRES_PASSWORD}" \
+  --dry-run=client -o yaml | kubectl apply -f -
+
+kubectl create secret generic mongodb-secret \
+  --namespace=$NAMESPACE \
+  --from-literal=username=admin \
+  --from-literal=password="${MONGO_PASSWORD}" \
   --dry-run=client -o yaml | kubectl apply -f -
 
 kubectl create secret generic movie-service-secret \
