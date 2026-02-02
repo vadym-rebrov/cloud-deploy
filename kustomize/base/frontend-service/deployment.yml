@@ -25,6 +25,10 @@ spec:
             requests:
               memory: "128Mi"
               cpu: "100m"
+          env:
+            - name: GOOGLE_AUTH_URL
+              value: http://34.149.76.67.sslip.io
+
           readinessProbe:
             httpGet:
               path: /
