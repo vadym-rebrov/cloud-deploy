@@ -14,7 +14,6 @@ spec:
     spec:
       containers:
         - name: movie-session-service
-          # Логічне ім'я для Kustomize
           image: movie-session-service:latest
           imagePullPolicy: Always
           ports:
@@ -29,12 +28,26 @@ spec:
           env:
             - name: NODE_ENV
               value: production
+
+            - name: MONGO_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-secret
+                  key: username
+
+            - name: MONGO_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-secret
+                  key: password
+
             - name: MONGO_ADDRESS
-              value: mongodb://mongo:27017/movie-session-db
+              value: "mongodb://$(MONGO_USERNAME):$(MONGO_PASSWORD)@mongodb:27017/movie-session-db?authSource=admin"
+
             - name: MOVIE_SERVICE_URL
-              value: http://localhost:8080/api/movie
+              value: "http://movie-service:80/api/movie"
             - name: SERVICE_NAME
-              value: movie-session-service
+              value: "movie-session-service"
           readinessProbe:
             httpGet:
               path: /health
