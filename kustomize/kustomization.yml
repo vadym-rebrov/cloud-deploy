@@ -1,0 +1,35 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - base
+
+# Версії образів — оновлюються автоматично через CI/CD (deploy.yml)
+images:
+  - name: api-gateway
+    newName: ghcr.io/vadym-rebrov/api-gateway
+    newTag: latest
+  - name: movie-service
+    newName: ghcr.io/vadym-rebrov/movie-service
+    newTag: latest
+  - name: frontend-service
+    newName: ghcr.io/vadym-rebrov/frontend-service
+    newTag: latest
+  - name: movie-session-service
+    newName: ghcr.io/vadym-rebrov/movie-session-service
+    newTag: latest
+  - name: email-notification-service
+    newName: ghcr.io/vadym-rebrov/email-notification-service
+    newTag: latest
+  - name: postgresql
+    newName: postgres
+    newTag: 16-alpine
+  - name: mongodb
+    newName: mongo
+    newTag: 8.0.4
+  - name: elasticsearch
+    newName: docker.elastic.co/elasticsearch/elasticsearch
+    newTag: 9.2.4
+  - name: kafka
+    newName: apache/kafka
+    newTag: 3.7.0

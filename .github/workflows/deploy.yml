@@ -2,17 +2,18 @@ name: GKE Deployment Orchestrator
 
 on:
   push:
-    branches: [main]
+    branches: [main, master]
   repository_dispatch:
     types: [deploy]
+
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  GKE_CLUSTER: ${{ secrets.GKE_CLUSTER_NAME }}
+  GKE_ZONE: ${{ secrets.GKE_LOCATION }}
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    permissions:
-      contents: 'write'
-      id-token: 'write'
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -21,26 +22,46 @@ jobs:
         name: 'Authenticate to Google Cloud'
         uses: 'google-github-actions/auth@v2'
         with:
-          workload_identity_provider: '${{ secrets.GCP_WIF_PROVIDER }}'
-          service_account: '${{ secrets.GCP_SA_EMAIL }}'
+          credentials_json: '${{ secrets.GCP_SA_KEY }}'
+          project_id: '${{ env.PROJECT_ID }}'
 
-      - name: 'Set up GKE credentials'
+      - name: 'Get GKE credentials'
         uses: 'google-github-actions/get-gke-credentials@v2'
         with:
-          cluster_name: '${{ secrets.GKE_CLUSTER_NAME }}'
-          location: '${{ secrets.GKE_LOCATION }}'
+          cluster_name: '${{ env.GKE_CLUSTER }}'
+          location: '${{ env.GKE_ZONE }}'
 
-      - name: Update Image Tag
+      - name: Create Secrets in Cluster
+        run: |
+          chmod +x scripts/create-secrets.sh
+          ./scripts/create-secrets.sh
+        env:
+          ADMIN_MAIL: ${{ secrets.ADMIN_MAIL }}
+          MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+          ELASTIC_USER: ${{ secrets.ELASTIC_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+
+      - name: Update image versions in kustomization
         if: github.event_name == 'repository_dispatch'
         run: |
+          cd kustomize
           SERVICE="${{ github.event.client_payload.service }}"
           TAG="${{ github.event.client_payload.tag }}"
+          OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
           
-          echo "Updating service: $SERVICE with tag: $TAG"
-          
-          cd kustomize/base/$SERVICE
-          kustomize edit set image "ghcr.io/${{ github.repository_owner }}/$SERVICE-service:$TAG"
+          echo "Updating $SERVICE to tag $TAG"
+          kustomize edit set image $SERVICE=ghcr.io/${OWNER}/$SERVICE:${TAG}
 
       - name: Apply Kubernetes Manifests
         run: |
-          kubectl apply -k kustomize/base
+          kubectl apply -k kustomize/
+
+      - name: Verify Deployment
+        if: github.event_name == 'repository_dispatch'
+        run: |
+          SERVICE="${{ github.event.client_payload.service }}"
+          kubectl rollout status deployment/$SERVICE
