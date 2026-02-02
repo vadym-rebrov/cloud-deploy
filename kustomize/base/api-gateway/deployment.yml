@@ -37,7 +37,17 @@ spec:
               value: "false"
             - name: SPRING_CONFIG_IMPORT
               value: ""
+            - name: GOOGLE_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: google-oauth-secret
+                  key: GOOGLE_CLIENT_ID
 
+            - name: GOOGLE_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: google-oauth-secret
+                  key: GOOGLE_CLIENT_SECRET
             - name: SPRING_APPLICATION_JSON
               value: >
                 {
