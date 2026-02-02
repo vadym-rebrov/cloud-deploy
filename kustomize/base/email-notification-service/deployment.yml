@@ -31,7 +31,7 @@ spec:
             - name: SPRING_ELASTICSEARCH_URIS
               value: "http://elasticsearch:9200"
             - name: MOVIE_SERVICE_URL
-              value: http://localhost:8080/api/movie
+              value: "http://movie-service:80/api/movie"
             - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
               value: "kafka:9092"
             - name: MAIL_USERNAME

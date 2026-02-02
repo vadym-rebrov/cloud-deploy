@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: movies-session-service
+  name: movie-session-service
 spec:
   type: ClusterIP
   selector:
-    app: movies-session-service
+    app: movie-session-service
   ports:
     - name: http
       port: 3500
