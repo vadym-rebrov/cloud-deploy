@@ -1,8 +1,10 @@
 #!/bin/bash
 set -e
 
-# Визначаємо namespace, щоб не прописувати його в кожній команді
 NAMESPACE="cinema-app"
+
+# Створюємо namespace, якщо він не існує
+kubectl create namespace $NAMESPACE --dry-run=client -o yaml | kubectl apply -f -
 
 echo "Creating secrets in namespace: $NAMESPACE"
 
