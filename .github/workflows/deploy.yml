@@ -64,4 +64,4 @@ jobs:
         if: github.event_name == 'repository_dispatch'
         run: |
           SERVICE="${{ github.event.client_payload.service }}"
-          kubectl rollout status deployment/$SERVICE
+          kubectl rollout status deployment/$SERVICE -n cinema-app
