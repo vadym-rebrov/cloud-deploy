@@ -52,7 +52,6 @@ spec:
 
           readinessProbe:
             httpGet:
-
               path: /api/health
               port: 3500
             initialDelaySeconds: 15
