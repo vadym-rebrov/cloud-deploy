@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: movies-session-service
+  name: movie-session-service
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: movies-session-service
+      app: movie-session-service
   template:
     metadata:
       labels:
-        app: movies-session-service
+        app: movie-session-service
     spec:
       containers:
-        - name: movies-session-service
+        - name: movie-session-service
           # Логічне ім'я для Kustomize
-          image: movies-session-service:latest
+          image: movie-session-service:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 3500
