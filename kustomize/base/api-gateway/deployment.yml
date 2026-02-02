@@ -30,10 +30,7 @@ spec:
               value: "9000"
             - name: SERVER_FORWARD_HEADERS_STRATEGY
               value: "framework"
-            - name: MOVIE_SERVICE_HOST
-              value: "movie-service"
-            - name: EMAIL_SERVICE_HOST
-              value: "email-notification-service"
+
             - name: SPRING_CLOUD_CONSUL_ENABLED
               value: "false"
             - name: SPRING_CLOUD_CONSUL_DISCOVERY_ENABLED
@@ -41,25 +38,46 @@ spec:
             - name: SPRING_CONFIG_IMPORT
               value: ""
 
-            - name: SPRING_CLOUD_GATEWAY_ROUTES_0_URI
-              value: "http://movie-service:80"
-            - name: SPRING_CLOUD_GATEWAY_ROUTES_1_URI
-              value: "http://movie-session-service:3500"
-            - name: SPRING_CLOUD_GATEWAY_ROUTES_2_URI
-              value: "http://frontend:80"
+            - name: SPRING_APPLICATION_JSON
+              value: >
+                {
+                  "spring": {
+                    "cloud": {
+                      "gateway": {
+                        "routes": [
+                          {
+                            "id": "movie-service",
+                            "uri": "http://movie-service:80",
+                            "predicates": ["Path=/api/movie/**, /api/director/**, /api/genre/**"]
+                          },
+                          {
+                            "id": "movie-session-service",
+                            "uri": "http://movie-session-service:3500",
+                            "predicates": ["Path=/api/movie-session/**"]
+                          },
+                          {
+                            "id": "frontend",
+                            "uri": "http://frontend:80",
+                            "predicates": ["Path=/**"]
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
 
             - name: MANAGEMENT_ENDPOINT_HEALTH_PROBES_ENABLED
               value: "true"
+
           readinessProbe:
             httpGet:
               path: /actuator/health/readiness
-              port: 8080
+              port: 9000
             initialDelaySeconds: 45
             periodSeconds: 10
-            failureThreshold: 3
           livenessProbe:
             httpGet:
               path: /actuator/health/liveness
-              port: 8080
+              port: 9000
             initialDelaySeconds: 90
-            periodSeconds: 20
+            periodSeconds: 30
