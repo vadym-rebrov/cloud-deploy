@@ -34,6 +34,22 @@ spec:
               value: "movie-service"
             - name: EMAIL_SERVICE_HOST
               value: "email-notification-service"
+            - name: SPRING_CLOUD_CONSUL_ENABLED
+              value: "false"
+            - name: SPRING_CLOUD_CONSUL_DISCOVERY_ENABLED
+              value: "false"
+            - name: SPRING_CONFIG_IMPORT
+              value: ""
+
+            - name: SPRING_CLOUD_GATEWAY_ROUTES_0_URI
+              value: "http://movie-service:80"
+            - name: SPRING_CLOUD_GATEWAY_ROUTES_1_URI
+              value: "http://movie-session-service:3500"
+            - name: SPRING_CLOUD_GATEWAY_ROUTES_2_URI
+              value: "http://frontend:80"
+
+            - name: MANAGEMENT_ENDPOINT_HEALTH_PROBES_ENABLED
+              value: "true"
           readinessProbe:
             httpGet:
               path: /actuator/health/readiness

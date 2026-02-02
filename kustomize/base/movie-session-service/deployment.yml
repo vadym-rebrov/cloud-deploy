@@ -46,8 +46,10 @@ spec:
 
             - name: MOVIE_SERVICE_URL
               value: "http://movie-service:80/api/movie"
+
             - name: SERVICE_NAME
               value: "movie-session-service"
+
           readinessProbe:
             httpGet:
               path: /health

@@ -28,31 +28,24 @@ spec:
           env:
             - name: SERVER_PORT
               value: "8082"
-            - name: SPRING_ELASTICSEARCH_URIS
-              value: "http://elasticsearch:9200"
+
             - name: MOVIE_SERVICE_URL
               value: "http://movie-service:80/api/movie"
+
+            - name: SPRING_ELASTICSEARCH_URIS
+              value: "http://elasticsearch:9200"
             - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
               value: "kafka:9092"
-            - name: MAIL_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: email-notification-secrets
-                  key: MAIL_USERNAME
-            - name: MAIL_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: email-notification-secrets
-                  key: MAIL_PASSWORD
-            - name: ELASTIC_USER
-              valueFrom:
-                secretKeyRef:
-                  name: email-notification-secrets
-                  key: ELASTIC_USER
-            - name: SPRING_KAFKA_CONSUMER_PROPERTIES_SPRING_JSON_USE_TYPE_HEADERS
+
+            - name: SPRING_CLOUD_CONSUL_ENABLED
               value: "false"
+
+            - name: MANAGEMENT_ENDPOINT_HEALTH_PROBES_ENABLED
+              value: "true"
+
           readinessProbe:
-            tcpSocket:
+            httpGet:
+              path: /actuator/health/readiness
               port: 8082
-            initialDelaySeconds: 20
+            initialDelaySeconds: 40
             periodSeconds: 10
