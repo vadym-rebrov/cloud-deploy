@@ -10,7 +10,7 @@ spec:
   template:
     metadata:
       labels:
-        app: frontend-service
+        app: frontend
     spec:
       containers:
         - name: frontend-service
