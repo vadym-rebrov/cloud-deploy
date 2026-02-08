@@ -3,6 +3,8 @@ kind: Service
 metadata:
   name: movie-service
 spec:
+  selector:
+    app: movie-service
   ports:
     - port: 80
       targetPort: 8080
